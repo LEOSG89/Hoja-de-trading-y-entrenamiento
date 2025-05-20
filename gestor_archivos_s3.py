@@ -1,15 +1,24 @@
+import streamlit as st
 import boto3
 import botocore
 import pandas as pd
 import json
-import config
 from io import BytesIO, StringIO
 
-# Configuración de S3
-t = boto3.session.Session()
-s3 = t.client('s3')
-BUCKET = config.S3_BUCKET  # Define en tu config.py
-entry_prefix = getattr(config, 'S3_PREFIX', '')  # Prefijo opcional para "uploads/"
+# Cargar claves desde st.secrets
+AWS_KEY = st.secrets["AWS"]["ACCESS_KEY_ID"]
+AWS_SECRET = st.secrets["AWS"]["SECRET_ACCESS_KEY"]
+REGION = st.secrets["AWS"].get("REGION", "us-east-1")
+BUCKET = st.secrets["AWS"]["BUCKET_NAME"]
+entry_prefix = st.secrets["AWS"].get("PREFIX", "")  # opcional
+
+# Crear cliente S3
+session = boto3.session.Session(
+    aws_access_key_id=AWS_KEY,
+    aws_secret_access_key=AWS_SECRET,
+    region_name=REGION
+)
+s3 = session.client("s3")
 
 
 def init_storage():
@@ -21,7 +30,6 @@ def init_storage():
     except botocore.exceptions.ClientError as err:
         error_code = int(err.response['Error']['Code'])
         if error_code == 404:
-            # El bucket no existe, lo creamos
             s3.create_bucket(Bucket=BUCKET)
         else:
             raise
@@ -63,20 +71,15 @@ def load_file_df(name: str) -> pd.DataFrame:
     name_lower = name.lower()
     if name_lower.endswith('.csv'):
         return pd.read_csv(BytesIO(data))
-
     elif name_lower.endswith('.xlsx'):
         return pd.read_excel(BytesIO(data), engine='openpyxl')
     elif name_lower.endswith('.xls'):
         return pd.read_excel(BytesIO(data), engine='xlrd')
-
     elif name_lower.endswith('.json'):
-        # JSON fue serializado con orient="table"
         text = data.decode('utf-8')
         return pd.read_json(StringIO(text), orient='table')
-
     else:
         raise ValueError(f"No se reconoce la extensión del archivo: {name}")
-    
 
 
 def delete_saved_file(name: str) -> None:
@@ -113,6 +116,5 @@ def load_json_state(name: str) -> dict:
         obj = s3.get_object(Bucket=BUCKET, Key=key)
         data = obj['Body'].read()
         return json.loads(data)
-    except botocore.exceptions.ClientError as e:
-        # 404 Not Found → no existe aún
+    except botocore.exceptions.ClientError:
         return {}
