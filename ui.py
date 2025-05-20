@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title="Hoja de Trading", page_icon="📈", layout="wide")
 import pandas as pd
 import os, json
 import config
@@ -56,7 +57,7 @@ except AttributeError:
 
 SELECT_FILE = 'selected_asset.json'
 
-st.set_page_config(page_title="Hoja de Trading", page_icon="📈", layout="wide")
+
 
 init_session(config)
 init_storage()
