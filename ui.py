@@ -1,5 +1,6 @@
 import streamlit as st
 st.set_page_config(page_title="Hoja de Trading", page_icon="📈", layout="wide")
+st.write("🚀 App iniciando correctamente (hasta este punto)")
 import pandas as pd
 import os, json
 import config
@@ -60,7 +61,10 @@ SELECT_FILE = 'selected_asset.json'
 
 
 init_session(config)
-init_storage()
+#init_storage()
+# ⚠️ Temporalmente desactivado para test
+# init_storage()
+st.write("✅ init_storage() desactivado temporalmente para prueba")
 
 # ————— Inicialización de flags que usa sidebar_files.py —————
 if 'loaded_file_name' not in st.session_state:
