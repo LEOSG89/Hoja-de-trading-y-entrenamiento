@@ -30,8 +30,8 @@ ASSETS = [
 # --- AWS S3 ---
 # Nombre de tu bucket en S3 (sin 's3://')
 # Nombre fijo de tu bucket (sin depender de env var)
-S3_BUCKET = "mi-app-trading-uploads"
+#S3_BUCKET = "mi-app-trading-uploads"
 
 
 # Prefijo (subcarpeta) dentro del bucket; si no lo quieres, déjalo vacío
-S3_PREFIX = os.getenv("S3_PREFIX", "uploads/")
+#S3_PREFIX = os.getenv("S3_PREFIX", "uploads/")
