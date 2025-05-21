@@ -17,7 +17,13 @@ def crear_cliente_s3():
     s3 = session.client("s3")
     return s3, BUCKET, PREFIX
 
-
+def init_storage():
+    s3, BUCKET, _ = crear_cliente_s3()
+    try:
+        s3.head_bucket(Bucket=BUCKET)
+    except botocore.exceptions.ClientError as err:
+        # El bucket no existe o hay error de permisos
+        st.warning(f"No se pudo verificar el bucket: {err}")
 
 
 def init_storage():
