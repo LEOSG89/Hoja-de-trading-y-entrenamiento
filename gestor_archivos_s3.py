@@ -1,24 +1,22 @@
 import streamlit as st
 import boto3
 import botocore
-import pandas as pd
-import json
-from io import BytesIO, StringIO
 
-# Leer claves y configuración desde st.secrets
-AWS_KEY = st.secrets["AWS"]["ACCESS_KEY_ID"]
-AWS_SECRET = st.secrets["AWS"]["SECRET_ACCESS_KEY"]
-REGION = st.secrets["AWS"].get("REGION", "us-east-1")
-BUCKET = st.secrets["AWS"]["BUCKET_NAME"]
-entry_prefix = st.secrets["AWS"].get("PREFIX", "")  # opcional
+def crear_cliente_s3():
+    AWS_KEY = st.secrets["AWS"]["ACCESS_KEY_ID"]
+    AWS_SECRET = st.secrets["AWS"]["SECRET_ACCESS_KEY"]
+    REGION = st.secrets["AWS"].get("REGION", "us-east-1")
+    BUCKET = st.secrets["AWS"]["BUCKET_NAME"]
+    PREFIX = st.secrets["AWS"].get("PREFIX", "")
+    
+    session = boto3.session.Session(
+        aws_access_key_id=AWS_KEY,
+        aws_secret_access_key=AWS_SECRET,
+        region_name=REGION,
+    )
+    s3 = session.client("s3")
+    return s3, BUCKET, PREFIX
 
-# Crear sesión con credenciales
-session = boto3.session.Session(
-    aws_access_key_id=AWS_KEY,
-    aws_secret_access_key=AWS_SECRET,
-    region_name=REGION,
-)
-s3 = session.client("s3")
 
 
 
